@@ -1,0 +1,284 @@
+---
+title: "Exploring the Nutrition Behind Coffee"
+output:
+  html_document:
+    toc: yes
+    df_print: paged
+  html_notebook:
+    toc: yes
+    toc_float: yes
+    theme: united
+---
+## Spring 2021
+
+Team members: 
+
+-[Adriana](mailto:apinto8356@floridapoly.edu) Pinto
+
+# Introduction
+
+Coffee may seem like a simple beverage used solely for its caffeination or refreshing taste, but nowadays with the variance of flavors, milks, and even add-ins, it is much more than that. A cup of coffee may contain things such as sodium, protein, or even vitamins that you were never expect that have consumed. 
+
+My project investigates the nutritional information of Starbucks drinks and evaluates how the different types of beverages can be either detrimental or beenficial to your health. 
+
+I will be using the data available at: 
+<https://raw.githubusercontent.com/reisanar/datasets/master/starbucks.csv> 
+
+This data set contains 242 different observations in correlation with 18 different variables describing different nutritional aspects of several beverages.
+
+
+```{r cars}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+```
+
+
+# Dataset
+
+```{r}
+library(tidyverse)
+myurl  <- "https://raw.githubusercontent.com/reisanar/datasets/master/starbucks.csv"
+starbucks <- read_csv(myurl)  
+```
+## Understanding the Data
+
+This should help us to get a better idea of what exactly we are going to be looking at what different categories there are as well as how they are arranged.
+
+```{r}
+set.seed(884823)
+head(starbucks)
+```
+```{r}
+glimpse(starbucks)
+```
+## Caffeine Intake
+
+First and foremost, when most people go to Starbucks, they are looking for a boost in energy, A.K.A. caffeine. Caffeine is usually measured in (mg) and can range from 0-500 in a typical Starbucks order. 
+
+Although caffeine can be helpful to many, too much of it can also be detrimental. It is important to recognize the amount of caffeine in the drink you order to avoid either undercaffeination, or unnecessary anxiety and restlessness. Additionally, when purchasing a drink from Starbucks for an audience such as children or pregnant women, unknown caffeine may be harmful. 
+
+The pros and cons of caffeine can be seen here. [website](https://www.webmd.com/food-recipes/features/pros-and-cons-caffeine-craze)
+```{r}
+starbucks <- starbucks %>% 
+  transform( caffeine = as.numeric(`Caffeine (mg)`))
+```
+
+```{r}
+starbucks %>% 
+  arrange(desc(caffeine), na.rm = TRUE) %>% 
+  select(caffeine, Beverage, Beverage_prep)
+```
+
+The following chart shows the different levels of caffeine in the drinks on the menu. It can be seen that the higher caffeinated drinks are the brewed coffees in larger sizes as well as the americanos, which are mostly consisted of espresso. 
+
+
+```{r}
+starbucks %>% 
+  ggplot(aes(x= Beverage_category, y = caffeine))+
+  geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+    coord_flip() +
+    xlab("") +
+    theme_bw()
+```
+The following bar chart shows the different categories of drinks and how much caffeine is in the combined categories. Like earlier stated, it can be seen that the largest amount of caffeine is within the classic espresso drinks. Now we can look deeper into this category and observe the breakdown of caffeine within it.
+
+```{r}
+starbucks %>% 
+  filter( Beverage_category == "Classic Espresso Drinks") %>% 
+  arrange(desc(caffeine)) %>% 
+  select(Beverage, Beverage_prep, caffeine)
+
+```
+In the most caffeinated category of drinks, here is the order of which drinks have the highest to lowest caffeine intake. However, not all consumers enjoy espresso or even coffee drinks in general. Here is the most caffeinated drinks of each category
+
+```{r}
+starbucks %>% 
+  filter( Beverage_category == "Coffee") %>% 
+  arrange(desc(caffeine)) %>% 
+  select(Beverage, Beverage_prep, caffeine) %>% 
+  head(3)
+
+```
+
+```{r}
+starbucks %>% 
+  filter( Beverage_category == "Frappuccino® Blended Coffee") %>% 
+  arrange(desc(caffeine)) %>% 
+  select(Beverage, Beverage_prep, caffeine) %>% 
+  head(3)
+```
+```{r}
+starbucks %>% 
+  filter( Beverage_category == "Frappuccino® Light Blended Coffee") %>% 
+  arrange(desc(caffeine)) %>% 
+  select(Beverage, Beverage_prep, caffeine) %>% 
+  head(3)
+```
+```{r}
+starbucks %>% 
+  filter( Beverage_category == "Shaken Iced Beverages") %>% 
+  arrange(desc(caffeine)) %>% 
+  select(Beverage, Beverage_prep, caffeine) %>% 
+  head(3)
+```
+
+```{r}
+starbucks %>% 
+  filter( Beverage_category == "Signature Espresso Drinks") %>% 
+  arrange(desc(caffeine)) %>% 
+  select(Beverage, Beverage_prep, caffeine) %>% 
+  head(3)
+```
+```{r}
+starbucks %>% 
+  filter( Beverage_category == "Smoothies") %>% 
+  arrange(desc(caffeine)) %>% 
+  select(Beverage, Beverage_prep, caffeine) %>% 
+  head(3)
+```
+
+```{r}
+starbucks %>% 
+  filter( Beverage_category == "Tazo® Tea Drinks") %>% 
+  arrange(desc(caffeine)) %>% 
+  select(Beverage, Beverage_prep, caffeine) %>% 
+  head(3)
+```
+
+## Caloric Information
+
+The caloric information of a coffee drink is mostly based off of its flavoring and the milk used in it. Different kinds of beverages may have different amounts of milk or syrups in them. The caloric information also correlates with the sizes of the beverages. In this section we will be exploring different correlations with the calories of each beverage. 
+
+```{r}
+starbucks %>% 
+ arrange(desc(Calories)) %>% 
+  select(Beverage, Beverage_prep, Calories) %>% 
+  head(10)
+
+```
+Listed above are 10 of the highest calorie drinks found at Starbucks. It can be seen that the white chocolate mocha syrup has the most calories as well as the Whole and 2% milk being most caloric.
+
+```{r}
+starbucks %>% 
+  ggplot(aes(x= Beverage_category, y = Calories))+
+  geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+    coord_flip() +
+    xlab("") +
+    theme_bw()
+```
+
+As a whole, it is shown that both espresso drinks and Frappucinno blended coffees have the highest calories. Next we will look at how the different beverages themselves effect the nutritional information
+
+```{r}
+starbucks %>% 
+  ggplot(aes(x= Beverage, y = Calories))+
+  geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+    coord_flip() +
+    xlab("") +
+    theme_bw()
+```
+Based on the total calories for each of the different beverages, clearly those with flavoring, especially the syrups correlate with having the highest calories. This can clearly be inferred, but a question that may arise is, "Does the amount of caffeine have any correlation with the calories?" Lets take a deeper look into that here.
+
+```{r}
+starbucks %>% 
+  ggplot(aes(x=caffeine, y=Calories, color = Beverage_category)) + 
+    geom_point()
+```
+
+The scatterplot above shows any potential correlation between the amount of caffeine in a drink and the number of calories in the drink. It can be seen that general, higher calorie drinks tend to be on the lower side of the caffeine scale. The highest calorie drinks lay in the 100 to 150 mg caffeinated drinks. The lower calorie drinks are scattered in caffeine value, however there are no decaffeinated drinks under 50 calories. The drinks under 50 calories have a range of 75 to over 400 mg in caffeine, leaning towards the higher end. In addition to this correlation, we are able to see a visual representation of how the different categories of beverages have both a variety opf caffeine levels and calorie amounts. 
+
+## Looking out for Sugar
+
+Besides the two main factors a general audience would look for in a beverage from Starbucks, calories and caffeine, there are several other categories that may have a positive or negative impact on the consumers health. To begin with, many drinks at Starbucks have an absurd amount of sugar.
+
+```{r}
+starbucks %>% 
+  arrange(desc(Sugars..g.)) %>% 
+  select(Beverage_category, Beverage, Sugars..g.)
+```
+The clear trend in the data is that the Frappuccinos generally have the highest amount of sugar. The most sugary beverage is the Java Chip Frapp with a whopping 84 grams of sugar That is almost 7 whole tablespoons of sugar. The daily recommended intake of sugar is 52 grams, making this beverage 162% of an average persons sugar intake. This would be something to look out for when choosing a drink. Lets look at a visual breakdown of this information
+
+
+```{r}
+starbucks %>% 
+  ggplot(aes(x= Beverage_category, y = Sugars..g.))+
+  geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+    coord_flip() +
+    xlab("") +
+    theme_bw()
+```
+The visual bar chart confirms that the drinks with the highest amount of sugar are the Frappuccino Blended Coffees, surprisingly followed by the Tazo Tea Drinks. It is also shown that the beverage with the lowest amount of Sugar is plain Coffee, with a low average of 0 grams of sugar. 
+
+```{r}
+starbucks %>% 
+  ggplot(aes(x=Sugars..g., y=Beverage, color = Beverage_prep)) + 
+    geom_point()
+```
+The scatterplot above shows how the different drinks have different levels of sugars. Some of these levels of sugars can be correlated with both the size as well as the type of milk used. The tall drinks are generally lower in sugar than the venti, while the drink with 2% and whole milk also have higher sugar than those with soymilk and nonfat milk. 
+
+
+```{r}
+starbucks %>% 
+  ggplot(aes(x=Calories, y= Sugars..g. ,color = Beverage_category)) + 
+    geom_point()+
+  geom_smooth(method=lm , color="black", se=FALSE)
+```
+
+A clear correlation can be seen with the calories of the different beverages and the sugar in them. As the calories increase, the amount of sugar increases as well. Likewise as the sugar increases, the calories go up. Additionally, it is shown how the frappuccinos and signature espresoo drinks contain high amounts of sugar and calories, while the tea and classic espresso drink are on the lower side.
+
+## Bulking
+
+```{r}
+starbucks %>% 
+  arrange(desc(Protein..g.)) %>% 
+  select(Beverage_category, Beverage, Protein..g.)
+```
+Taking a look at the protein content of the Beverages, the smoothies definatly have the highest amount of protein, at 20.0g. This is the amount of protein in some scoops of protein powder, making it an excellent choice for those looking to up their protein intake. Surprisingly, a close second to the smoothies is the white chocolate mocha. This espresso beverage contains 19g of protein, almost the same amount as a smoothie. However, for those looking to up their protein, they are most likely looking to do it for the least amount of calories possible. Lets take a look at what beverages optimize this ratio.
+
+```{r}
+starbucks %>% 
+  ggplot(aes(x=Calories, y=Protein..g.,color = Sugars..g.)) + 
+    geom_point()
+
+```
+This graph shows the optimum Calorie to Protein ratio while also keeping in mind the Sugar intake. The beverage with 20g of protein and around 275 calories would be the optimal choice for a consumer looking for a protein boost. Additionally, this drink does not contain an absurd amount of sugar.
+
+## Keto
+
+Every Individual has their own dietary preferences. One of the biggest trends to sweep the nation has been Keto. Ketosis is a metabolic state characterized by elevated levels of ketone bodies in the blood or urine. By eating a low carbohydrate diet, the brain recieves additional energy to form ketones. 
+
+```{r}
+starbucks %>% 
+ arrange(Total.Carbohydrates..g.) %>% 
+  select(Beverage, Beverage_prep, Total.Carbohydrates..g.) %>% 
+  head(11)
+
+```
+Displayed above are all of the 0 total carbohydrate beverages on the menu. If sticking to a very low carb diet, these are the best options.
+
+```{r}
+starbucks %>% 
+ arrange(desc(Total.Carbohydrates..g.)) %>% 
+  select(Beverage, Beverage_prep, Total.Carbohydrates..g.) %>% 
+  head(5)
+```
+These are some of the worst options to get if following a keto diet. These beverages contain 320 to 340 grams of carbs. This is over an average persons daily recommended intake of carbohydrates. Additionally, an ENTIRE pizza is 284 carbs, still less than this Frappuccino. A person following a Keto diet would most definitely want to stay away from these drinks. 
+
+## Conclusion
+
+After analyzing this dataset, I was able to learn much more about nutritional information at Starbucks. Often times, a drink that may taste strongly may not always have the highest amount of caffeine. Additionally, Starbucks can be a good place for several target audiences such as those following low carb diets, those looking for protein, and those in a calorie deficit. It was very interesting to be able to analyze so many different components of something that may seem like a simple drink, Coffee. Before analyzing the data I would not have known how high in sugar some drinks may be, or how much protein a drink might carry. Overall, the project was very fascinating and allowed me to have a better insight of data manipulation and using given data to create different correlations.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
